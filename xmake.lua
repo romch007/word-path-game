@@ -1,8 +1,13 @@
 add_rules("mode.debug", "mode.release")
 
+add_requires("cxxopts")
+
 target("word-path-game")
     set_kind("binary")
     add_files("src/*.cpp")
+    add_includedirs("include")
+    add_headerfiles("include/*.hpp")
+    add_packages("cxxopts")
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
