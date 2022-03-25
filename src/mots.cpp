@@ -17,6 +17,10 @@ std::string round_to_str(float number, unsigned int precision) {
   return ss.str();
 }
 
+bool is_in(const word_list& words, const std::string& target) {
+  return std::find(words.begin(), words.end(), target) != words.end();
+}
+
 std::unique_ptr<dict> generate_dict(std::ifstream& file) {
   std::string alpha = "abcdefghijklmnopqrstuvwxyz";
   word_list possible_words;
@@ -41,9 +45,7 @@ std::unique_ptr<dict> generate_dict(std::ifstream& file) {
         if (tmp[i] == letter)
           continue;
         tmp[i] = letter;
-        auto found = std::find(possible_words.begin(), possible_words.end(),
-                               tmp) != possible_words.end();
-        if (found)
+        if (is_in(possible_words, tmp))
           result->at(word).push_back(tmp);
       }
     }
@@ -106,6 +108,11 @@ int main(int argc, char** argv) {
 
   std::string filename(argv[1]);
   std::ifstream file(filename);
+
+  if (!file.is_open()) {
+    std::cout << "Dict file not found" << std::endl;
+    return 1;
+  }
 
   auto result_dict = generate_dict(file);
   std::cout << "Dict generated" << std::endl;
