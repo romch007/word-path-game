@@ -11,17 +11,13 @@
 using word_list = std::vector<std::string>;
 using dict = std::map<std::string, word_list>;
 
-std::string
-round_to_str(float number, unsigned int precision)
-{
+std::string round_to_str(float number, unsigned int precision) {
   std::ostringstream ss;
   ss << std::fixed << std::setprecision(precision) << number;
   return ss.str();
 }
 
-std::unique_ptr<dict>
-generate_dict(std::ifstream& file)
-{
+std::unique_ptr<dict> generate_dict(std::ifstream& file) {
   std::string alpha = "abcdefghijklmnopqrstuvwxyz";
   word_list possible_words;
 
@@ -45,9 +41,8 @@ generate_dict(std::ifstream& file)
         if (tmp[i] == letter)
           continue;
         tmp[i] = letter;
-        auto found =
-          std::find(possible_words.begin(), possible_words.end(), tmp) !=
-          possible_words.end();
+        auto found = std::find(possible_words.begin(), possible_words.end(),
+                               tmp) != possible_words.end();
         if (found)
           result->at(word).push_back(tmp);
       }
@@ -57,11 +52,9 @@ generate_dict(std::ifstream& file)
   return result;
 }
 
-std::unique_ptr<word_list>
-find_path(const std::string& source,
-          const std::string& target,
-          std::unique_ptr<dict> words)
-{
+std::unique_ptr<word_list> find_path(const std::string& source,
+                                     const std::string& target,
+                                     std::unique_ptr<dict> words) {
   std::queue<std::string> path;
   std::map<std::string, bool> used;
   std::map<std::string, std::string> previous;
@@ -95,9 +88,7 @@ find_path(const std::string& source,
   return nullptr;
 }
 
-void
-print_final_list(std::unique_ptr<word_list> words)
-{
+void print_final_list(std::unique_ptr<word_list> words) {
   if (words == nullptr) {
     std::cout << "No path found" << std::endl;
   } else {
@@ -109,9 +100,7 @@ print_final_list(std::unique_ptr<word_list> words)
   }
 }
 
-int
-main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   if (argc < 4)
     std::cout << "Not enough arguments" << std::endl;
 
