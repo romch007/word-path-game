@@ -6,6 +6,11 @@
 #include <sstream>
 #include <words.hpp>
 
+void lowercase(std::string& str) {
+  std::transform(str.begin(), str.end(), str.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+}
+
 std::string round_to_str(float number, unsigned int precision) {
   std::ostringstream ss;
   ss << std::fixed << std::setprecision(precision) << number;
@@ -24,6 +29,7 @@ std::unique_ptr<dict> generate_dict(std::ifstream& file,
   std::string line;
   int word_count = 0;
   while (std::getline(file, line)) {
+    lowercase(line);
     possible_words.push_back(line);
     word_count++;
   }
@@ -34,8 +40,7 @@ std::unique_ptr<dict> generate_dict(std::ifstream& file,
   int progress = 0;
   for (const auto& word : possible_words) {
     float progress_percentage = ((float)progress / (float)word_count) * 100.0f;
-    std::cout << "Progress: " << round_to_str(progress_percentage, 2) << "%"
-              << std::endl;
+    std::cout << "Progress: " << round_to_str(progress_percentage, 2) << "%\r";
 
     result->insert(std::make_pair(word, word_list()));
     output << word;

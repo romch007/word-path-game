@@ -40,10 +40,8 @@ int main(int argc, char** argv) {
     }
 
     auto imported_dict = parse_dict_from_file(dict_file);
-    std::string start_word(source_str);
-    std::string end_word(target_str);
     auto result_path =
-        find_path(start_word, end_word, std::move(imported_dict));
+        find_path(source_str, target_str, std::move(imported_dict));
     std::cout << "Path computed" << std::endl;
 
     print_final_list(std::move(result_path));
