@@ -1,6 +1,7 @@
 #include <cxxopts.hpp>
 #include <fstream>
 #include <iostream>
+#include <utils.hpp>
 #include <words.hpp>
 
 int main(int argc, char** argv) {
@@ -8,13 +9,13 @@ int main(int argc, char** argv) {
   options.add_options()("d,dict", "Dict file to use",
                         cxxopts::value<std::string>())(
       "r,raw", "Raw file to use", cxxopts::value<std::string>())(
-      "s,source", "Source word", cxxopts::value<std::string>())(
+      "s,start", "Start word", cxxopts::value<std::string>())(
       "o,output", "Output dict", cxxopts::value<std::string>())(
-      "t,target", "Target word", cxxopts::value<std::string>());
+      "e,end", "End word", cxxopts::value<std::string>());
 
   auto result = options.parse(argc, argv);
 
-  if (result.count("raw")) {
+  if (result.count("raw") && result.count("output")) {
     auto raw_filename = result["raw"].as<std::string>();
     auto output_filename = result["output"].as<std::string>();
     std::ifstream raw_file(raw_filename);
@@ -28,10 +29,13 @@ int main(int argc, char** argv) {
 
     auto result_dict = generate_dict(raw_file, output_file);
     std::cout << "Dict generated" << std::endl;
-  } else {
+  } else if (result.count("dict") && result.count("start") &&
+             result.count("end")) {
     auto dict_filename = result["dict"].as<std::string>();
-    auto source_str = result["source"].as<std::string>();
-    auto target_str = result["target"].as<std::string>();
+    auto start_str = result["start"].as<std::string>();
+    lowercase(start_str);
+    auto end_str = result["end"].as<std::string>();
+    lowercase(end_str);
     std::ifstream dict_file(dict_filename);
 
     if (!dict_file.is_open()) {
@@ -40,11 +44,13 @@ int main(int argc, char** argv) {
     }
 
     auto imported_dict = parse_dict_from_file(dict_file);
-    auto result_path =
-        find_path(source_str, target_str, std::move(imported_dict));
+    auto result_path = find_path(start_str, end_str, std::move(imported_dict));
     std::cout << "Path computed" << std::endl;
 
     print_final_list(std::move(result_path));
+  } else {
+    std::cout << "Bad arguments" << std::endl;
+    return 1;
   }
   return 0;
 }
