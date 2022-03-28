@@ -62,8 +62,8 @@ std::unique_ptr<word_list> find_path(const std::string& source,
                                      const std::string& target,
                                      std::unique_ptr<dict> words) {
   std::queue<std::string> path;
-  std::map<std::string, bool> used;
-  std::map<std::string, std::string> previous;
+  std::unordered_map<std::string, bool> used;
+  std::unordered_map<std::string, std::string> previous;
 
   path.push(source);
   used[source] = true;
