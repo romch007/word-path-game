@@ -6,12 +6,13 @@
 
 int main(int argc, char** argv) {
   cxxopts::Options options("word-path-game", "One line description");
-  options.add_options()("d,dict", "Dict file to use",
-                        cxxopts::value<std::string>())(
-      "r,raw", "Raw file to use", cxxopts::value<std::string>())(
-      "s,start", "Start word", cxxopts::value<std::string>())(
-      "o,output", "Output dict", cxxopts::value<std::string>())(
-      "e,end", "End word", cxxopts::value<std::string>());
+  options.add_options()
+    ("d,dict", "Dict file to use", cxxopts::value<std::string>())(
+      "r,raw", "Raw file to use",  cxxopts::value<std::string>())(
+      "s,start", "Start word",     cxxopts::value<std::string>())(
+      "o,output", "Output dict",   cxxopts::value<std::string>())(
+      "e,end", "End word",         cxxopts::value<std::string>())(
+      "h,help", "Display help");
 
   auto result = options.parse(argc, argv);
 
@@ -48,6 +49,9 @@ int main(int argc, char** argv) {
     std::cout << "Path computed" << std::endl;
 
     print_final_list(std::move(result_path));
+  } else if (result.count("help")) {
+    std::cout << options.help() << std::endl;
+    return 0;
   } else {
     std::cout << "Bad arguments" << std::endl;
     return 1;
