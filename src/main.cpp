@@ -51,7 +51,6 @@ int main(int argc, char** argv) {
     print_final_list(std::move(result_path));
   } else if (result.count("help")) {
     std::cout << options.help() << std::endl;
-    return 0;
   } else {
     std::cout << "Bad arguments" << std::endl;
     return 1;
