@@ -7,5 +7,6 @@
 bool is_in(const word_list& words, const std::string& target);
 std::string round_to_str(float number, unsigned int precision);
 void lowercase(std::string& str);
+bool check_for_words(const word_list& words, const dict& target_word);
 
 #endif

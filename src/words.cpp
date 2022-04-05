@@ -64,6 +64,14 @@ std::unique_ptr<word_list> find_path(const std::string& source,
   std::queue<std::string> path;
   std::unordered_map<std::string, bool> used;
   std::unordered_map<std::string, std::string> previous;
+  
+  {
+    word_list source_and_target = { source, target };
+
+    if (!check_for_words(source_and_target, *words)) {
+      return nullptr;
+    }
+  }
 
   path.push(source);
   used[source] = true;
