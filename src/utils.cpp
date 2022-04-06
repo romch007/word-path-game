@@ -21,7 +21,7 @@ bool is_in(const word_list& words, const std::string& target) {
 
 bool check_for_words(const word_list& words, const dict& target_dict) {
   for (const auto& current_word : words) {
-    if (target_dict.find(current_word) != target_dict.end()) {
+    if (target_dict.find(current_word) == target_dict.end()) {
       std::cout << "Cannot find '" << current_word << "' in dictionnary" << std::endl;
       return false;
     }
