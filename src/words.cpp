@@ -48,7 +48,7 @@ void generate_dict(std::ifstream& file, std::ofstream& output) {
   }
   std::cout << word_count << " words were read" << std::endl
             << "Starting dict creation" << std::endl;
-  std::atomic_int progress;
+  std::atomic_int progress = 0;
   std::vector<std::thread> threads(possible_words.size());
   for (const auto& word : possible_words) {
     threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output), std::ref(progress), word_count);
