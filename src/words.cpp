@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <mutex>
+#include <thread>
 #include <fstream>
 #include <iostream>
 #include <queue>
@@ -6,10 +8,12 @@
 #include <utils.hpp>
 #include <words.hpp>
 
+std::mutex mtx;
 
 void compute_neighbours(const std::string& source, const word_list& possible_words, std::ofstream& output) {
   static std::string alpha = "abcdefghijklmnopqrstuvwxyz";
-  output << source;
+  std::stringstream ss;
+  ss << source;
   for (int i = 0; i < source.size(); i++) {
     for (const auto& letter : alpha) {
       std::string tmp = source;
@@ -17,15 +21,17 @@ void compute_neighbours(const std::string& source, const word_list& possible_wor
         continue;
       tmp[i] = letter;
       if (is_in(possible_words, tmp)) {
-        output << " " << tmp;
+        ss << " " << tmp;
       }
     }
   }
-  output << "\n";
+  ss << "\n";
+  mtx.lock();
+  output << ss.str();
+  mtx.unlock();
 }
 
-void generate_dict(std::ifstream& file,
-                                    std::ofstream& output) {
+void generate_dict(std::ifstream& file, std::ofstream& output) {
   word_list possible_words;
 
   std::string line;
@@ -38,12 +44,15 @@ void generate_dict(std::ifstream& file,
   std::cout << word_count << " words were read" << std::endl
             << "Starting dict creation" << std::endl;
 
-  int progress = 0;
+  std::vector<std::thread> threads(possible_words.size());
   for (const auto& word : possible_words) {
-    float progress_percentage = ((float)progress / (float)word_count) * 100.0f;
-    std::cout << "Progress: " << round_to_str(progress_percentage, 2) << "%\r";
-    compute_neighbours(word, possible_words, output);
-    progress++;
+    threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output));
+    //compute_neighbours(word, possible_words, output);
+  }
+  for (auto& t : threads) {
+    if (t.joinable()) {
+      t.join();
+    }
   }
 }
 
