@@ -12,9 +12,12 @@ add_includedirs("include")
 add_languages("cxx17")
 set_warnings("allextra")
 
+target("main")
+  set_kind("binary")
+  add_deps("word-path-game")
+
 target("word-path-game")
-    set_group("word-path-game")
-    set_kind("binary")
+    set_kind("static")
     add_files("src/*.cpp")
     add_headerfiles("include/*.hpp")
     add_packages("cxxopts")
@@ -28,11 +31,10 @@ option_end()
 if has_config("tests") then
     add_requires("catch2")
 
-    target("word-path-game-tests")
+    target("tests")
         add_deps("word-path-game")
         add_files("tests/*.cpp")
         add_packages("catch2")
-        set_group("Tests")
         set_kind("binary")
         add_headerfiles("include/*.hpp")
 end
