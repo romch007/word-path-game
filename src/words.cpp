@@ -6,9 +6,26 @@
 #include <utils.hpp>
 #include <words.hpp>
 
+
+void compute_neighbours(const std::string& source, const word_list& possible_words, std::ofstream& output) {
+  static std::string alpha = "abcdefghijklmnopqrstuvwxyz";
+  output << source;
+  for (int i = 0; i < source.size(); i++) {
+    for (const auto& letter : alpha) {
+      std::string tmp = source;
+      if (tmp[i] == letter)
+        continue;
+      tmp[i] = letter;
+      if (is_in(possible_words, tmp)) {
+        output << " " << tmp;
+      }
+    }
+  }
+  output << "\n";
+}
+
 void generate_dict(std::ifstream& file,
                                     std::ofstream& output) {
-  std::string alpha = "abcdefghijklmnopqrstuvwxyz";
   word_list possible_words;
 
   std::string line;
@@ -25,20 +42,7 @@ void generate_dict(std::ifstream& file,
   for (const auto& word : possible_words) {
     float progress_percentage = ((float)progress / (float)word_count) * 100.0f;
     std::cout << "Progress: " << round_to_str(progress_percentage, 2) << "%\r";
-
-    output << word;
-    for (int i = 0; i < word.size(); i++) {
-      for (const auto& letter : alpha) {
-        std::string tmp = word;
-        if (tmp[i] == letter)
-          continue;
-        tmp[i] = letter;
-        if (is_in(possible_words, tmp)) {
-          output << " " << tmp;
-        }
-      }
-    }
-    output << std::endl;
+    compute_neighbours(word, possible_words, output);
     progress++;
   }
 }
