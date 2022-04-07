@@ -47,7 +47,6 @@ void generate_dict(std::ifstream& file, std::ofstream& output) {
   std::vector<std::thread> threads(possible_words.size());
   for (const auto& word : possible_words) {
     threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output));
-    //compute_neighbours(word, possible_words, output);
   }
   for (auto& t : threads) {
     if (t.joinable()) {
