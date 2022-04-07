@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 
     std::ofstream output_file(output_filename);
 
-    auto result_dict = generate_dict(raw_file, output_file);
+    generate_dict(raw_file, output_file);
     std::cout << "Dict generated" << std::endl;
   } else if (result.count("dict") && result.count("start") &&
              result.count("end")) {

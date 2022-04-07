@@ -6,7 +6,7 @@
 #include <utils.hpp>
 #include <words.hpp>
 
-std::unique_ptr<dict> generate_dict(std::ifstream& file,
+void generate_dict(std::ifstream& file,
                                     std::ofstream& output) {
   std::string alpha = "abcdefghijklmnopqrstuvwxyz";
   word_list possible_words;
@@ -21,13 +21,11 @@ std::unique_ptr<dict> generate_dict(std::ifstream& file,
   std::cout << word_count << " words were read" << std::endl
             << "Starting dict creation" << std::endl;
 
-  auto result = std::make_unique<dict>();
   int progress = 0;
   for (const auto& word : possible_words) {
     float progress_percentage = ((float)progress / (float)word_count) * 100.0f;
     std::cout << "Progress: " << round_to_str(progress_percentage, 2) << "%\r";
 
-    result->insert(std::make_pair(word, word_list()));
     output << word;
     for (int i = 0; i < word.size(); i++) {
       for (const auto& letter : alpha) {
@@ -36,7 +34,6 @@ std::unique_ptr<dict> generate_dict(std::ifstream& file,
           continue;
         tmp[i] = letter;
         if (is_in(possible_words, tmp)) {
-          result->at(word).push_back(tmp);
           output << " " << tmp;
         }
       }
@@ -44,8 +41,6 @@ std::unique_ptr<dict> generate_dict(std::ifstream& file,
     output << std::endl;
     progress++;
   }
-
-  return result;
 }
 
 void save_dict_to_file(const dict& dict_to_save, std::ofstream& file) {
