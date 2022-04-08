@@ -16,7 +16,7 @@ TEST_CASE("Utils", "[utils]") {
   }
 
   SECTION("is_in") {
-    word_list words = { "foo", "hey", "abc", "bar", "test" };
+    word_list words = { "foo", "hey", "abc", "bar" };
     REQUIRE( is_in(words, "abc") );
     REQUIRE( !is_in(words, "test") );
   }
