@@ -13,20 +13,20 @@ add_languages("cxx17")
 set_warnings("allextra")
 
 target("main")
-  set_kind("binary")
-  add_deps("word-path-game")
-  add_files("src/main.cpp")
-  add_packages("cxxopts")
+    set_kind("binary")
+    add_deps("word-path-game")
+    add_files("src/main.cpp")
+    add_packages("cxxopts")
 
 target("word-path-game")
-    set_kind("static")
+    set_kind("object")
     add_files("src/*.cpp|main.cpp")
     add_headerfiles("include/*.hpp")
 
 option("tests")
-  set_default(false)
-  set_showmenu(true)
-  set_description("Build unit tests")
+    set_default(false)
+    set_showmenu(true)
+    set_description("Build unit tests")
 option_end()
 
 if has_config("tests") then
