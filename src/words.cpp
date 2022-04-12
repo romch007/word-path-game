@@ -11,8 +11,9 @@
 namespace wordpath {
 
   std::mutex mtx;
+  std::atomic_int progress = 0;
 
-  void compute_neighbours(const std::string& source, const word_list& possible_words, std::ofstream& output, std::atomic_int& progress, int word_count) {
+  void compute_neighbours(const std::string& source, const word_list& possible_words, std::ofstream& output, int word_count) {
     static std::string alpha = "abcdefghijklmnopqrstuvwxyz";
     std::stringstream ss;
     ss << source;
@@ -50,10 +51,9 @@ namespace wordpath {
     }
     std::cout << word_count << " words were read" << std::endl
               << "Starting dict creation" << std::endl;
-    std::atomic_int progress = 0;
     std::vector<std::thread> threads(possible_words.size());
     for (const auto& word : possible_words) {
-      threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output), std::ref(progress), word_count);
+      threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output), word_count);
     }
     for (auto& t : threads) {
       if (t.joinable()) {
@@ -72,9 +72,9 @@ namespace wordpath {
     }
   }
 
-  std::unique_ptr<word_list> find_path(const std::string& source,
+  word_list find_path(const std::string& source,
                                        const std::string& target,
-                                       std::unique_ptr<dict> words) {
+                                       const dict& words) {
     std::queue<std::string> path;
     std::unordered_map<std::string, bool> used;
     std::unordered_map<std::string, std::string> previous;
@@ -82,8 +82,8 @@ namespace wordpath {
     {
       word_list source_and_target = { source, target };
 
-      if (!check_for_words(source_and_target, *words)) {
-        return nullptr;
+      if (!check_for_words(source_and_target, words)) {
+        return word_list(0);
       }
     }
 
@@ -94,7 +94,7 @@ namespace wordpath {
     while (!path.empty()) {
       auto v = path.front();
       path.pop();
-      for (const auto& u : words->at(v)) {
+      for (const auto& u : words.at(v)) {
         if (!used[u]) {
           used[u] = true;
           path.push(u);
@@ -104,30 +104,30 @@ namespace wordpath {
     }
 
     if (!used[target]) {
-      return nullptr;
+      return word_list(0);
     } else {
-      auto reverse_path = std::make_unique<word_list>();
+      word_list reverse_path;
       for (std::string v = target; v != ""; v = previous[v])
-        reverse_path->push_back(v);
-      std::reverse(reverse_path->begin(), reverse_path->end());
+        reverse_path.push_back(v);
+      std::reverse(reverse_path.begin(), reverse_path.end());
       return reverse_path;
     }
   }
 
-  void print_final_list(std::unique_ptr<word_list> words) {
-    if (words == nullptr) {
+  void print_final_list(const word_list& words) {
+    if (words.size() == 0) {
       std::cout << "No path found" << std::endl;
     } else {
-      std::cout << "-- FROM " << words->front() << std::endl;
-      for (int i = 1; i < words->size() - 1; i++) {
-        std::cout << i << ". " << words->at(i) << std::endl;
+      std::cout << "-- FROM " << words.front() << std::endl;
+      for (int i = 1; i < words.size() - 1; i++) {
+        std::cout << i << ". " << words.at(i) << std::endl;
       }
-      std::cout << "-- TO " << words->back() << std::endl;
+      std::cout << "-- TO " << words.back() << std::endl;
     }
   }
 
-  std::unique_ptr<dict> parse_dict_from_file(std::ifstream& dict_file) {
-    auto result = std::make_unique<dict>();
+  dict parse_dict_from_file(std::ifstream& dict_file) {
+    dict result;
 
     std::string line;
     char delimiter = ' ';
@@ -135,11 +135,11 @@ namespace wordpath {
       std::istringstream ss(line);
       std::string word;
       std::getline(ss, word, delimiter);
-      result->insert(std::make_pair(word, word_list()));
+      result.insert(std::make_pair(word, word_list()));
 
       std::string linked_word;
       while (std::getline(ss, linked_word, delimiter)) {
-        result->at(word).push_back(linked_word);
+        result.at(word).push_back(linked_word);
       }
     }
     return result;
