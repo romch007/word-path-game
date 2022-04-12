@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
+/**
+ * Main namespace
+ */
 namespace wordpath {
 
   /**
