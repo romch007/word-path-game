@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <atomic>
 #include <sstream>
 #include <utils.hpp>
 #include <words.hpp>
