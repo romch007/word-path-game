@@ -6,3 +6,5 @@ build/
 .DS_Store
 CMakeLists*
 
+.idea
+cmake-build-debug
