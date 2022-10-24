@@ -45,10 +45,10 @@ int main(int argc, char** argv) {
     }
 
     auto imported_dict = wordpath::parse_dict_from_file(dict_file);
-    auto result_path = wordpath::find_path(start_str, end_str, std::move(imported_dict));
+    auto result_path = wordpath::find_path(start_str, end_str, imported_dict);
     std::cout << "Path computed" << std::endl;
 
-    wordpath::print_final_list(std::move(result_path));
+    wordpath::print_final_list(result_path);
   } else if (result.count("help")) {
     std::cout << options.help() << std::endl;
   } else {

@@ -116,7 +116,7 @@ namespace wordpath {
   }
 
   void print_final_list(const word_list& words) {
-    if (words.size() == 0) {
+    if (words.empty()) {
       std::cout << "No path found" << std::endl;
     } else {
       std::cout << "-- FROM " << words.front() << std::endl;
