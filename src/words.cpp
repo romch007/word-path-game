@@ -1,6 +1,4 @@
 #include <algorithm>
-#include <mutex>
-#include <thread>
 #include <fstream>
 #include <iostream>
 #include <queue>
@@ -8,6 +6,7 @@
 #include <sstream>
 #include <utils.hpp>
 #include <words.hpp>
+#include <threadpool/pool.hpp>
 
 namespace wordpath {
 
@@ -52,15 +51,23 @@ namespace wordpath {
     }
     std::cout << word_count << " words were read" << std::endl
               << "Starting dict creation" << std::endl;
-    std::vector<std::thread> threads(possible_words.size());
+    // std::vector<std::thread> threads(possible_words.size());
+    // for (const auto& word : possible_words) {
+    //   threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output), word_count);
+    // }
+    // for (auto& t : threads) {
+    //   if (t.joinable()) {
+    //     t.join();
+    //   }
+    // }
+    threadpool::pool pool;
     for (const auto& word : possible_words) {
-      threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output), word_count);
+        pool.push([&] {
+            compute_neighbours(word, possible_words, std::ref(output), word_count);
+        });
     }
-    for (auto& t : threads) {
-      if (t.joinable()) {
-        t.join();
-      }
-    }
+    pool.start();
+    while (pool.busy());
   }
 
   void save_dict_to_file(const dict& dict_to_save, std::ofstream& file) {
