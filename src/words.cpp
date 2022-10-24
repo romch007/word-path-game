@@ -51,15 +51,6 @@ namespace wordpath {
     }
     std::cout << word_count << " words were read" << std::endl
               << "Starting dict creation" << std::endl;
-    // std::vector<std::thread> threads(possible_words.size());
-    // for (const auto& word : possible_words) {
-    //   threads.emplace_back(compute_neighbours, word, possible_words, std::ref(output), word_count);
-    // }
-    // for (auto& t : threads) {
-    //   if (t.joinable()) {
-    //     t.join();
-    //   }
-    // }
     threadpool::pool pool;
     for (const auto& word : possible_words) {
         pool.push([&] {
